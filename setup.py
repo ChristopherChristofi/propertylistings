@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='listings',
     version='1.0.0',
-    py_modules=['listings', 'resources'],
+    py_modules=['listings', 'scraper', 'resources'],
     install_requires=[
         'click',
         'beautifulsoup4',
