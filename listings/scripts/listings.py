@@ -1,7 +1,8 @@
 import click
 import csv
-from resources import regions, region_options
-from scraper import Scraper
+from listings.archive import logger
+from listings.resources import regions, region_options
+from listings.scraper import Scraper
 
 class Config(object):
 
@@ -20,15 +21,20 @@ pass_config = click.make_pass_decorator(Config, ensure=True)
         type=click.Path(()),
         help='Provide an output filepath for saved data, otherwise will be default.'
         )
+@click.option('--log',
+        default='listings.log',
+        type=click.Path(()),
+        help='Provide a output filepath for logs.'
+        )
 @pass_config
-def cli(config, save_file, filepath):
+def cli(config, save_file, filepath, log):
 
     '''
     Generate webscraped property data from RightMove that can be saved into an output CSV file.
     '''
     config.save_file = save_file
     config.filepath = filepath
-
+    logger(log)
 
 @cli.command()
 @click.option(
@@ -65,4 +71,5 @@ def search(config, pages, region):
 
     else:
         click.echo(listings)
+
 

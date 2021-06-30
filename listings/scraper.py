@@ -1,12 +1,14 @@
 import re
 import requests
+import logging
 from bs4 import BeautifulSoup
-from resources import regions
+from listings.resources import regions
+
 
 class Scraper:
 
     data = []
-
+    
     def __init__(self, pages: int, region: str):
 
         self.pages = pages
@@ -38,6 +40,8 @@ class Scraper:
 
             self.data.append(row)
 
+            logging.info('Property record added.')
+
     def scrape_origin(self):
         
         '''
@@ -58,6 +62,8 @@ class Scraper:
 
             self.parse_data(scrape = soup)
 
+            logging.info('Page:{page_index} scraped'.format(page_index=i))
+
             record += 24
 
     def generate_data(self):
@@ -66,11 +72,15 @@ class Scraper:
         Initiates webscraping call to action and data generation, returning complete dataset.
         '''
 
+        logging.info('Start')
+
         header_row = [ 'address', 'country', 'name', 'date_added', 'price', 'description' ]
 
         self.data.append(header_row)
 
         self.scrape_origin()
+
+        logging.info('Complete')
 
         return self.data
 
