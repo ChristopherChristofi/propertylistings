@@ -48,15 +48,10 @@ def search(config, pages, region):
     '''
     Scrape RightMove for-sale property data listings.
     '''
-    
-    listings = []
 
-    header_row = [ 'address', 'country', 'name', 'date_added', 'price', 'description' ]
-    listings.append(header_row)
-
-    scrape = Scraper(pages, region, listings)
+    scrape = Scraper(pages, region)
     
-    listings = scrape.scrape_origin()
+    listings = scrape.generate_data()
 
     # Qualify if save-file option has been provided, otherwise echo gathered dataset.
     if config.save_file:

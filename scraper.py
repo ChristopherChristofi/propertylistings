@@ -1,27 +1,16 @@
 import re
 import requests
 from bs4 import BeautifulSoup
-from dataclasses import dataclass
 from resources import regions
 
-@dataclass
-class Dataset:
-    
-    address: str
-    country: str
-    name: str
-    date_added: str
-    price: int
-    description: str
-
-@dataclass
 class Scraper:
 
-    def __init__(self, pages: int, region: str, table: list[Dataset]):
+    data = []
+
+    def __init__(self, pages: int, region: str):
 
         self.pages = pages
         self.region = region
-        self.table = table
 
     def parse_data(self, scrape):
 
@@ -47,13 +36,13 @@ class Scraper:
             # sales description for the property. Punctuation handling and CSV delimitation 
             row.append(''.join(('"',re.sub('\n|\r', '', tag.find('span', { 'itemprop': 'description' }).text),'"')))
 
-            self.table.append(row)
+            self.data.append(row)
 
     def scrape_origin(self):
         
         '''
-        Contains the callable data parsing function and returns the complete dataset. Responsible for initiating the html
-        requests connection that is used in the build of the webscraping tool, with user defined settings.
+        Responsible for initiating the html requests connection that is used in the build of the webscraping tool,
+        with user defined settings. Contains the callable data parsing function generating the complete dataset.
         '''
 
         # typically 24 for-sale property records per distinct webpage
@@ -71,5 +60,17 @@ class Scraper:
 
             record += 24
 
-        return self.table
+    def generate_data(self):
+
+        '''
+        Initiates webscraping call to action and data generation, returning complete dataset.
+        '''
+
+        header_row = [ 'address', 'country', 'name', 'date_added', 'price', 'description' ]
+
+        self.data.append(header_row)
+
+        self.scrape_origin()
+
+        return self.data
 
