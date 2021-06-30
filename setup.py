@@ -1,9 +1,10 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='listings',
     version='1.0.0',
-    py_modules=['listings', 'scraper', 'resources'],
+    packages=find_packages(),
+    include_packe_data=True,
     install_requires=[
         'click',
         'beautifulsoup4',
@@ -11,7 +12,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'listings = listings:cli',
+            'listings = listings.scripts.listings:cli',
         ],
     },
 )
