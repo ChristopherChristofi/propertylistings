@@ -6,15 +6,101 @@ from listings.resources import regions
 
 class URICreator:
 
-    def __init__(self, min_price: int, max_price: int):
+    do_not_show_options = {
+            1 : "&dontShow={option_1}",
+            2 : "&dontShow={option_1}%2C{option_2}", 
+            3 : "&dontShow={option_1}%2C{option_2}%2C{option_3}",
+            "empty" : "&dontShow="
+            }
+
+    not_options = {
+            1 : '',
+            2 : '',
+            3 : ''
+            }
+
+    
+    must_have_options = {
+            1 : "&mustHave={option_1}",
+            2 : "&mustHave={option_1}%2C{option_2}", 
+            3 : "&mustHave={option_1}%2C{option_2}%2C{option_3}"
+            }
+
+    must_options = {
+            1 : '',
+            2 : '',
+            3 : '',
+            4 : '',
+            5 : '',
+            6 : ''
+            }
+
+    def __init__(self, min_price: int, max_price: int, retirement: bool, shared: bool, new_home: bool):
 
         self.uri = None
         self.min_price = min_price
         self.max_price = max_price
+        self.retirement = retirement
+        self.shared = shared
+        self.new_home = new_home
+
+    def must_have_URI(self):
+
+        request = 0
+ 
+        if self.retirement == True:
+            request += 1
+            self.must_options[request] = 'retirement'
+        if self.shared == True:
+            request += 1
+            self.must_options[request] = 'sharedOwnership'
+        if self.new_home == True:
+            request += 1
+            self.must_options[request] = 'newHome'
+        
+        try:
+            must_have = self.must_have_options[request].format(
+                    option_1=self.must_options[1],
+                    option_2=self.must_options[2],
+                    option_3=self.must_options[3])
+        except KeyError:
+            return "&mustHave="
+
+        return must_have
+
+    def do_not_show_URI(self):
+
+        request = 0 
+
+        if self.retirement == False:
+            request += 1
+            self.not_options[request] = 'retirement'
+        if self.shared == False:
+            request += 1
+            self.not_options[request] = 'sharedOwnership' 
+        if self.new_home == False:
+            request += 1
+            self.not_options[request] = 'newHome'
+
+        try:
+            do_not_show = self.do_not_show_options[request].format(
+                    option_1=self.not_options[1],
+                    option_2=self.not_options[2],
+                    option_3=self.not_options[3])
+        except KeyError:
+            return "&dontShow="
+
+        return do_not_show
+
 
     def generator(self):
 
-        self.uri = '&minPrice={min_price}&maxPrice={max_price}'.format(min_price=self.min_price, max_price=self.max_price)
+        self.uri = '&minPrice={min_price}&maxPrice={max_price}{musthave}{dontshow}'.format(
+                min_price=self.min_price,
+                max_price=self.max_price,
+                musthave=self.must_have_URI(),
+                dontshow=self.do_not_show_URI()
+                )     
         
         return self.uri
                     
@@ -23,13 +109,16 @@ class Scraper:
 
     data = []
     
-    def __init__(self, pages: int, region: str, min_price: int, max_price: int):
+    def __init__(self, pages: int, region: str, min_price: int, max_price: int, retirement: bool, shared: bool, new_home: bool):
 
         self.pages = pages
         self.region = region
         self.uri = URICreator(
                 min_price=min_price,
-                max_price=max_price
+                max_price=max_price,
+                retirement=retirement,
+                shared=shared,
+                new_home=new_home
                 ).generator()
 
     def parse_data(self, scrape):
@@ -71,6 +160,8 @@ class Scraper:
         record = 0
 
         uri = self.uri
+
+        print(uri)
 
         for i in range(0, self.pages): 
             html = requests.get(

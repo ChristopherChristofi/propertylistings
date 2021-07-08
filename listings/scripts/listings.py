@@ -45,7 +45,7 @@ def cli(config, save_file, filepath, log):
 @click.option(
         '--region',
         default='London',
-        type=click.Choice(region_options),
+        type=click.Choice(region_options, case_sensitive=False),
         help='Select a region to search for property listings.'
         )
 @click.option(
@@ -60,14 +60,29 @@ def cli(config, save_file, filepath, log):
         type=int,
         help='Provide an integer value that is the maximum sales price that you want to search by.'
         )
+@click.option(
+        '--retirement/--no-retirement',
+        default=None,
+        help='Filter for or filter out retirement properties in your search.'
+        )
+@click.option(
+        '--shared/--no-shared',
+        default=None,
+        help='Filter for or filter out shared-ownership properties in your search.'
+        )
+@click.option(
+        '--new-home/--no-new-home',
+        default=None,
+        help='Filter for or filter out new build properties in your search.'
+        )
 @pass_config
-def search(config, pages, region, min_price, max_price):
+def search(config, pages, region, min_price, max_price, retirement, shared, new_home):
 
     '''
     Scrape RightMove for-sale property data listings.
     '''
-
-    scrape = Scraper(pages, region, min_price, max_price)
+    
+    scrape = Scraper(pages, region, min_price, max_price, retirement, shared, new_home)
     
     listings = scrape.generate_data()
 
