@@ -4,15 +4,33 @@ import logging
 from bs4 import BeautifulSoup
 from listings.resources import regions
 
+class URICreator:
+
+    def __init__(self, min_price: int, max_price: int):
+
+        self.uri = None
+        self.min_price = min_price
+        self.max_price = max_price
+
+    def generator(self):
+
+        self.uri = '&minPrice={min_price}&maxPrice={max_price}'.format(min_price=self.min_price, max_price=self.max_price)
+        
+        return self.uri
+                    
 
 class Scraper:
 
     data = []
     
-    def __init__(self, pages: int, region: str):
+    def __init__(self, pages: int, region: str, min_price: int, max_price: int):
 
         self.pages = pages
         self.region = region
+        self.uri = URICreator(
+                min_price=min_price,
+                max_price=max_price
+                ).generator()
 
     def parse_data(self, scrape):
 
@@ -49,13 +67,19 @@ class Scraper:
         with user defined settings. Contains the callable data parsing function generating the complete dataset.
         '''
 
-        # typically 24 for-sale property records per distinct webpage
+        # typically 24 for-sale property records per distinct webpage (from source maximum pages is '42')
         record = 0
+
+        uri = self.uri
 
         for i in range(0, self.pages): 
             html = requests.get(
-                'https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=REGION%5E{region}&index={pg}'
-                .format(region=regions[self.region], pg=record)
+                'https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=REGION%5E{region}&index={pg}{uri}'
+                .format(
+                    region=regions[self.region],
+                    pg=record,
+                    uri=uri
+                    )
                 ).text
 
             soup = BeautifulSoup(html, 'html.parser')

@@ -2,7 +2,7 @@ import click
 import csv
 from listings.archive import logger
 from listings.resources import regions, region_options
-from listings.scraper import Scraper
+from listings.scraper import Scraper, URICreator
 
 class Config(object):
 
@@ -48,14 +48,26 @@ def cli(config, save_file, filepath, log):
         type=click.Choice(region_options),
         help='Select a region to search for property listings.'
         )
+@click.option(
+        '--min-price',
+        default=None,
+        type=int,
+        help='Provide an integer value that is the minimun sales price that you want to search by.'
+        )
+@click.option(
+        '--max-price',
+        default=None,
+        type=int,
+        help='Provide an integer value that is the maximum sales price that you want to search by.'
+        )
 @pass_config
-def search(config, pages, region):
+def search(config, pages, region, min_price, max_price):
 
     '''
     Scrape RightMove for-sale property data listings.
     '''
 
-    scrape = Scraper(pages, region)
+    scrape = Scraper(pages, region, min_price, max_price)
     
     listings = scrape.generate_data()
 
