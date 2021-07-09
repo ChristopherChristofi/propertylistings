@@ -1,115 +1,25 @@
-import re
-import requests
-import logging
+import re, requests, logging
 from bs4 import BeautifulSoup
 from listings.resources import regions
-
-class URICreator:
-
-    do_not_show_options = {
-            1 : "&dontShow={option_1}",
-            2 : "&dontShow={option_1}%2C{option_2}", 
-            3 : "&dontShow={option_1}%2C{option_2}%2C{option_3}",
-            "empty" : "&dontShow="
-            }
-
-    not_options = {
-            1 : '',
-            2 : '',
-            3 : ''
-            }
-
-    
-    must_have_options = {
-            1 : "&mustHave={option_1}",
-            2 : "&mustHave={option_1}%2C{option_2}", 
-            3 : "&mustHave={option_1}%2C{option_2}%2C{option_3}"
-            }
-
-    must_options = {
-            1 : '',
-            2 : '',
-            3 : '',
-            4 : '',
-            5 : '',
-            6 : ''
-            }
-
-    def __init__(self, min_price: int, max_price: int, retirement: bool, shared: bool, new_home: bool):
-
-        self.uri = None
-        self.min_price = min_price
-        self.max_price = max_price
-        self.retirement = retirement
-        self.shared = shared
-        self.new_home = new_home
-
-    def must_have_URI(self):
-
-        request = 0
- 
-        if self.retirement == True:
-            request += 1
-            self.must_options[request] = 'retirement'
-        if self.shared == True:
-            request += 1
-            self.must_options[request] = 'sharedOwnership'
-        if self.new_home == True:
-            request += 1
-            self.must_options[request] = 'newHome'
-        
-        try:
-            must_have = self.must_have_options[request].format(
-                    option_1=self.must_options[1],
-                    option_2=self.must_options[2],
-                    option_3=self.must_options[3])
-        except KeyError:
-            return "&mustHave="
-
-        return must_have
-
-    def do_not_show_URI(self):
-
-        request = 0 
-
-        if self.retirement == False:
-            request += 1
-            self.not_options[request] = 'retirement'
-        if self.shared == False:
-            request += 1
-            self.not_options[request] = 'sharedOwnership' 
-        if self.new_home == False:
-            request += 1
-            self.not_options[request] = 'newHome'
-
-        try:
-            do_not_show = self.do_not_show_options[request].format(
-                    option_1=self.not_options[1],
-                    option_2=self.not_options[2],
-                    option_3=self.not_options[3])
-        except KeyError:
-            return "&dontShow="
-
-        return do_not_show
-
-
-    def generator(self):
-
-        self.uri = '&minPrice={min_price}&maxPrice={max_price}{musthave}{dontshow}'.format(
-                min_price=self.min_price,
-                max_price=self.max_price,
-                musthave=self.must_have_URI(),
-                dontshow=self.do_not_show_URI()
-                )     
-        
-        return self.uri
-                    
+from listings.utilities import URICreator
 
 class Scraper:
 
     data = []
-    
-    def __init__(self, pages: int, region: str, min_price: int, max_price: int, retirement: bool, shared: bool, new_home: bool):
+
+    def __init__(
+        self,
+        pages: int,
+        region: str,
+        min_price: int,
+        max_price: int,
+        retirement: bool,
+        shared: bool,
+        new_home: bool,
+        garden: bool,
+        parking: bool,
+        auction: bool
+        ):
 
         self.pages = pages
         self.region = region
@@ -118,7 +28,10 @@ class Scraper:
                 max_price=max_price,
                 retirement=retirement,
                 shared=shared,
-                new_home=new_home
+                new_home=new_home,
+                garden=garden,
+                parking=parking,
+                auction=auction
                 ).generator()
 
     def parse_data(self, scrape):
@@ -129,20 +42,20 @@ class Scraper:
         '''
 
         # specific html segment content for web scraping
-        for tag in scrape.find_all('div', { 'class': 'l-searchResult is-list' }):      
+        for tag in scrape.find_all('div', { 'class': 'l-searchResult is-list' }):
             row = []
 
             # public property for sale address
             row.append(re.sub(',|\r|\n', '', tag.find('meta', { 'itemprop': 'streetAddress' })['content']))
             # country for property on sale
             row.append(tag.find('meta', { 'itemprop': 'addressCountry' })['content'])
-            # name type for property, for example: 5 bed house 
+            # name type for property, for example: 5 bed house
             row.append(re.sub('\n|\r', '', tag.find('h2', { 'class': 'propertyCard-title' }).text).strip())
             # date property was first added or reduced for sale
             row.append(tag.find('span', { 'class': 'propertyCard-branchSummary-addedOrReduced' }).text)
             # display data for sale price
             row.append(re.sub('£|,', '', tag.find('div', { 'class': 'propertyCard-priceValue' }).text.rstrip()))
-            # sales description for the property. Punctuation handling and CSV delimitation 
+            # sales description for the property. Punctuation handling and CSV delimitation
             row.append(''.join(('"',re.sub('\n|\r', '', tag.find('span', { 'itemprop': 'description' }).text),'"')))
 
             self.data.append(row)
@@ -150,7 +63,7 @@ class Scraper:
             logging.info('Property record added.')
 
     def scrape_origin(self):
-        
+
         '''
         Responsible for initiating the html requests connection that is used in the build of the webscraping tool,
         with user defined settings. Contains the callable data parsing function generating the complete dataset.
@@ -163,7 +76,7 @@ class Scraper:
 
         print(uri)
 
-        for i in range(0, self.pages): 
+        for i in range(0, self.pages):
             html = requests.get(
                 'https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=REGION%5E{region}&index={pg}{uri}'
                 .format(
@@ -198,4 +111,3 @@ class Scraper:
         logging.info('Complete')
 
         return self.data
-

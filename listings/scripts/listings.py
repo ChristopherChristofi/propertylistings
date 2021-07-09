@@ -1,8 +1,7 @@
-import click
-import csv
+import click, csv
 from listings.archive import logger
-from listings.resources import regions, region_options
-from listings.scraper import Scraper, URICreator
+from listings.resources import region_options
+from listings.scraper import Scraper
 
 class Config(object):
 
@@ -24,7 +23,7 @@ pass_config = click.make_pass_decorator(Config, ensure=True)
 @click.option('--log',
         default='listings.log',
         type=click.Path(()),
-        help='Provide a output filepath for logs.'
+        help='Provide a output filepath for a log file.'
         )
 @pass_config
 def cli(config, save_file, filepath, log):
@@ -75,15 +74,53 @@ def cli(config, save_file, filepath, log):
         default=None,
         help='Filter for or filter out new build properties in your search.'
         )
+@click.option(
+        '--garden',
+        is_flag=True,
+        help='Select so that each property record searched for must have a garden.'
+        )
+@click.option(
+        '--parking',
+        is_flag=True,
+        help='Select so that each property record searched for must have parking.'
+        )
+@click.option(
+        '--auction',
+        is_flag=True,
+        help='Select so that each property record searched for is an auction property.'
+        )
 @pass_config
-def search(config, pages, region, min_price, max_price, retirement, shared, new_home):
+def search(
+        config,
+        pages,
+        region,
+        min_price,
+        max_price,
+        retirement,
+        shared,
+        new_home,
+        garden,
+        parking,
+        auction
+        ):
 
     '''
     Scrape RightMove for-sale property data listings.
     '''
-    
-    scrape = Scraper(pages, region, min_price, max_price, retirement, shared, new_home)
-    
+
+    scrape = Scraper(
+            pages,
+            region,
+            min_price,
+            max_price,
+            retirement,
+            shared,
+            new_home,
+            garden,
+            parking,
+            auction
+            )
+
     listings = scrape.generate_data()
 
     # Qualify if save-file option has been provided, otherwise echo gathered dataset.
