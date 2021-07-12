@@ -1,4 +1,4 @@
-from listings.resources import do_not_show_options, not_options, must_have_options, must_options
+from listings.resources import *
 
 class URICreator:
 
@@ -11,29 +11,35 @@ class URICreator:
         self,
         min_price: int,
         max_price: int,
+        min_beds: str,
+        max_beds: str,
         retirement: bool,
         shared: bool,
         new_home: bool,
         garden: bool,
         parking: bool,
-        auction: bool
+        auction: bool,
+        max_days: str
         ):
 
         self.uri = None
-        self.min_price = min_price
-        self.max_price = max_price
+        self.min_price = '&minPrice={min_price}'.format(min_price=min_price)
+        self.max_price = '&maxPrice={max_price}'.format(max_price=max_price)
+        self.min_beds = '&minBedrooms={min_beds}'.format(min_beds=min_beds)
+        self.max_beds = '&maxBedrooms={max_beds}'.format(max_beds=max_beds)
         self.retirement = retirement
         self.shared = shared
         self.new_home = new_home
         self.garden = garden
         self.parking = parking
         self.auction = auction
+        self.max_days = '&maxDaysSinceAdded={max_days}'.format(max_days=max_days)
 
     def must_have_URI(self):
 
         '''
         Responsible for qualifying the URI object resources from the boolean
-        returns of command option selection for property must have search filtering.
+        returns of the command's options selected regarding must have filtering.
         '''
 
         request = 0
@@ -78,7 +84,7 @@ class URICreator:
 
         '''
         Responsible for qualifying the URI object resources from the boolean
-        returns of command option selection for property do not show search filtering.
+        returns of the command's options selected regarding do not show filtering.
         '''
 
         request = 0
@@ -114,9 +120,12 @@ class URICreator:
         provided in the command.
         '''
 
-        self.uri = '&minPrice={min_price}&maxPrice={max_price}{musthave}{dontshow}'.format(
+        self.uri = '&minPrice={min_price}{max_price}{min_beds}{max_beds}{max_days}{musthave}{dontshow}'.format(
                 min_price=self.min_price,
                 max_price=self.max_price,
+                min_beds=self.min_beds,
+                max_beds=self.max_beds,
+                max_days=self.max_days,
                 musthave=self.must_have_URI(),
                 dontshow=self.do_not_show_URI()
                 )
