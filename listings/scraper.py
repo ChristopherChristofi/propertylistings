@@ -13,12 +13,15 @@ class Scraper:
         region: str,
         min_price: int,
         max_price: int,
+        min_beds: str,
+        max_beds: str,
         retirement: bool,
         shared: bool,
         new_home: bool,
         garden: bool,
         parking: bool,
-        auction: bool
+        auction: bool,
+        max_days: str
         ):
 
         self.pages = pages
@@ -26,12 +29,15 @@ class Scraper:
         self.uri = URICreator(
                 min_price=min_price,
                 max_price=max_price,
+                min_beds=min_beds,
+                max_beds=max_beds,
                 retirement=retirement,
                 shared=shared,
                 new_home=new_home,
                 garden=garden,
                 parking=parking,
-                auction=auction
+                auction=auction,
+                max_days=max_days
                 ).generator()
 
     def parse_data(self, scrape):

@@ -33,6 +33,8 @@ def cli(config, save_file, filepath, log):
     '''
     config.save_file = save_file
     config.filepath = filepath
+
+    # TODO move to scraper command
     logger(log)
 
 @cli.command()
@@ -58,6 +60,18 @@ def cli(config, save_file, filepath, log):
         default=None,
         type=int,
         help='Provide an integer value that is the maximum sales price that you want to search by.'
+        )
+@click.option(
+        '--max-beds',
+        default=None,
+        type=click.Choice(['0','1','2','3','4','5','6','7','8','9','10']),
+        help='Define the maximum amount of bedrooms a proerty should require in the search.'
+        )
+@click.option(
+        '--min-beds',
+        default=None,
+        type=click.Choice(['0','1','2','3','4','5','6','7','8','9','10']),
+        help='Define the minimum amount of bedrooms a proerty should require in the search.'
         )
 @click.option(
         '--retirement/--no-retirement',
@@ -89,6 +103,12 @@ def cli(config, save_file, filepath, log):
         is_flag=True,
         help='Select so that each property record searched for is an auction property.'
         )
+@click.option(
+        '--max-days',
+        default=None,
+        type=click.Choice(['1','3','7','14']),
+        help='Select the maximum days for when a property was first added.'
+        )
 @pass_config
 def search(
         config,
@@ -96,12 +116,15 @@ def search(
         region,
         min_price,
         max_price,
+        min_beds,
+        max_beds,
         retirement,
         shared,
         new_home,
         garden,
         parking,
-        auction
+        auction,
+        max_days
         ):
 
     '''
@@ -113,12 +136,15 @@ def search(
             region,
             min_price,
             max_price,
+            min_beds,
+            max_beds,
             retirement,
             shared,
             new_home,
             garden,
             parking,
-            auction
+            auction,
+            max_days
             )
 
     listings = scrape.generate_data()
