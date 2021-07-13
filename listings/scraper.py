@@ -21,7 +21,8 @@ class Scraper:
         garden: bool,
         parking: bool,
         auction: bool,
-        max_days: str
+        max_days: str,
+        offer_sold: bool
         ):
 
         self.pages = pages
@@ -37,7 +38,8 @@ class Scraper:
                 garden=garden,
                 parking=parking,
                 auction=auction,
-                max_days=max_days
+                max_days=max_days,
+                offer_sold=offer_sold
                 ).generator()
 
     def parse_data(self, scrape):

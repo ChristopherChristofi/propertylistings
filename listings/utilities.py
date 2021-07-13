@@ -19,7 +19,8 @@ class URICreator:
         garden: bool,
         parking: bool,
         auction: bool,
-        max_days: str
+        max_days: str,
+        offer_sold: bool
         ):
 
         self.uri = None
@@ -34,6 +35,8 @@ class URICreator:
         self.parking = parking
         self.auction = auction
         self.max_days = '&maxDaysSinceAdded={max_days}'.format(max_days=max_days)
+        self.offer_sold = '&includeSSTC={under_offer_sold}'.format(under_offer_sold=offer_sold)
+
 
     def must_have_URI(self):
 
@@ -120,12 +123,13 @@ class URICreator:
         provided in the command.
         '''
 
-        self.uri = '&minPrice={min_price}{max_price}{min_beds}{max_beds}{max_days}{musthave}{dontshow}'.format(
+        self.uri = '&minPrice={min_price}{max_price}{min_beds}{max_beds}{max_days}{under_offer_sold}{musthave}{dontshow}'.format(
                 min_price=self.min_price,
                 max_price=self.max_price,
                 min_beds=self.min_beds,
                 max_beds=self.max_beds,
                 max_days=self.max_days,
+                under_offer_sold=self.offer_sold,
                 musthave=self.must_have_URI(),
                 dontshow=self.do_not_show_URI()
                 )

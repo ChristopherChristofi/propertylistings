@@ -109,6 +109,11 @@ def cli(config, save_file, filepath, log):
         type=click.Choice(['1','3','7','14']),
         help='Select the maximum days for when a property was first added.'
         )
+@click.option(
+        '--offer-sold',
+        is_flag=True,
+        help='Select so that property records that are either under offer or sold are also returned.'
+        )
 @pass_config
 def search(
         config,
@@ -124,7 +129,8 @@ def search(
         garden,
         parking,
         auction,
-        max_days
+        max_days,
+        offer_sold
         ):
 
     '''
@@ -144,7 +150,8 @@ def search(
             garden,
             parking,
             auction,
-            max_days
+            max_days,
+            offer_sold
             )
 
     listings = scrape.generate_data()
