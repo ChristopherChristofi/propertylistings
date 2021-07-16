@@ -6,23 +6,24 @@ from listings.utilities import URICreator
 class Scraper:
 
     data = []
+    max_pages = 42
 
     def __init__(
         self,
-        pages: int,
-        region: str,
-        min_price: int,
-        max_price: int,
-        min_beds: str,
-        max_beds: str,
-        retirement: bool,
-        shared: bool,
-        new_home: bool,
-        garden: bool,
-        parking: bool,
-        auction: bool,
-        max_days: str,
-        offer_sold: bool
+        pages: int = None,
+        region: str = None,
+        min_price: int = None,
+        max_price: int = None,
+        min_beds: str = None,
+        max_beds: str = None,
+        retirement: bool = None,
+        shared: bool = None,
+        new_home: bool = None,
+        garden: bool = None,
+        parking: bool = None,
+        auction: bool = None,
+        max_days: str = None,
+        offer_sold: bool = False
         ):
 
         self.pages = pages
@@ -68,7 +69,7 @@ class Scraper:
 
             self.data.append(row)
 
-            logging.info('Property record added.')
+            logging.info('Property record added: {address}'.format(address=str(row[2])))
 
     def scrape_origin(self):
 
@@ -80,9 +81,7 @@ class Scraper:
         # typically 24 for-sale property records per distinct webpage (from source maximum pages is '42')
         record = 0
 
-        uri = self.uri
-
-        print(uri)
+        if self.pages > self.max_pages: self.pages = self.max_pages
 
         for i in range(0, self.pages):
             html = requests.get(
@@ -90,7 +89,7 @@ class Scraper:
                 .format(
                     region=regions[self.region],
                     pg=record,
-                    uri=uri
+                    uri=self.uri
                     )
                 ).text
 
