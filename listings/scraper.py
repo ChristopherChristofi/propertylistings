@@ -60,8 +60,14 @@ class Scraper:
             row.append(tag.find('meta', { 'itemprop': 'addressCountry' })['content'])
             # name type for property, for example: 5 bed house
             row.append(re.sub('\n|\r', '', tag.find('h2', { 'class': 'propertyCard-title' }).text).strip())
-            # date property was first added or reduced for sale
-            row.append(tag.find('span', { 'class': 'propertyCard-branchSummary-addedOrReduced' }).text)
+            # scrape sales update status data
+            status = tag.find('span', { 'class': 'propertyCard-branchSummary-addedOrReduced' }).text.split()
+            if len(status) == 3:
+                row.append(status[0])
+                row.append(status[2])
+            if len(status) != 3:
+                row.append('NA')
+                row.append('NA')
             # display data for sale price
             row.append(re.sub('£|,', '', tag.find('div', { 'class': 'propertyCard-priceValue' }).text.rstrip()))
             # sales description for the property. Punctuation handling and CSV delimitation
@@ -109,7 +115,7 @@ class Scraper:
 
         logging.info('Start')
 
-        header_row = [ 'address', 'country', 'name', 'date_added', 'price', 'description' ]
+        header_row = [ 'address', 'country', 'name', 'update_status', 'date', 'price', 'description' ]
 
         self.data.append(header_row)
 
