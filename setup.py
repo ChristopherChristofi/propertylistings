@@ -6,16 +6,16 @@ with open("README.md") as f:
 if __name__ == "__main__":
     setuptools.setup(
         name='propertylistings',
-        version='0.1.9',
+        version='0.1.0',
         author='Christopher Christofi',
         author_email='christopherlchristofi@outlook.com',
         license='GPL-3.0',
         description='Webscraping tool for archiving sales records on RightMove.',
         long_description=long_description,
         long_description_content_type="text/markdown",
-        url='https://github.com/christopher-christofi/listings',
+        url='https://github.com/christopher-christofi/propertylistings',
         project_urls={
-            "Bug Tracker": "https://github.com/christopher-christofi/listings/issues",
+            "Bug Tracker": "https://github.com/christopher-christofi/propertylistings/issues",
         },
         packages=setuptools.find_packages(),
         include_package_data=True,
@@ -31,7 +31,6 @@ if __name__ == "__main__":
             ],
         },
         classifiers=[
-            'Development Status :: 3 - Alpha',
             'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
             'Operating System :: OS Independent',
             'Programming Language :: Python :: 3',

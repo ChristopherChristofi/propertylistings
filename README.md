@@ -68,7 +68,7 @@ The response data consists of:
 
 The most amount of data you can collect is limited by the page counts set by the RightMove website, this same limitation is enforced in PropertyListings so you don't have to needlessly continue searching if all has been retrieved. It is important to note that not all sales records are visible even on the website itself, at most there is 40+ pages per search and that is around 1000 to 1100 property records.
 
-All the filter parameters that build the search query function in a PropertyListinngs command can include:
+All the filter parameters that build the search query function in a PropertyListings command can include:
 - set pages
 - set region
 - set maximum and minimum bedroom counts
@@ -90,12 +90,14 @@ An example that uses a lot of these search parameters can be found here:
 propertylistings --save-file search --pages 30 --region devon --max-beds 8 --min-beds 6 --new-home, --no-retirement --offer-sold
 ```
 
-Returning sales property records based in Devon, that have bedroom count between 8 and 6, is a new build, is not a retirement property, and the data can also include properties under offer or already sold.
+Returning sales property records based in Devon, that has a bedroom count between 8 and 6, is a new build, is not a retirement property, and the data can also include properties under offer or already sold.
 
-Due to the copius amounts of regions and their own subregions again, not every existing RightMove region is available directly through the PropertyListings '--region' option, although, there are plans to continue adding more batches of regions, for now London and other areas around the United Kingdom are available; however, if you cannot find yours on the list (which you find using the help example from above) you are able to add a region temporarily via the '--add-region' option of the main command, which can see below:
+Due to the copius amounts of regions and their own subregions again, not every existing RightMove region is available directly through the PropertyListings '--region' option, although, there are plans to continue adding more batches of regions, for now London and other areas around the United Kingdom are available; however, if you cannot find yours on the list (which you find using the help example from above) you are able to add a region temporarily via the '--add-region' option of the main command, which you can see below:
 
 ```sh
 propertylistings --save-file --add-region 813 search --pages 22 --max-price 750000 --max-days 7 --auction
 ```
 
 The '813' is an example region code for RightMove that will search properties found in 'Liverpool'. With regards to the other options in this search query command, all property data returned will have a maximum price value of £750,000, will have been added within the past 7 days, and will be an auction property.
+
+Thank you and good luck.
