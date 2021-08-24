@@ -1,12 +1,12 @@
 import unittest
-from listings.scraper import Scraper
-from listings.utilities import URICreator
+from propertylistings.properties_scraper import PropertiesWebTool
+from propertylistings.utilities import URICreator
 
-class TestListings(unittest.TestCase):
+class TestPropertyListings(unittest.TestCase):
 
     def test_search(self):
         count=0
-        for record in Scraper(pages=1, region="London").generate_data():
+        for record in PropertiesWebTool(pages=1, region="London").generate_data():
             assert record[0]
             count += 1
             if count == 5: break
@@ -19,7 +19,7 @@ class TestListings(unittest.TestCase):
         '''
 
         count = 0
-        for record in Scraper(pages=1, region="London", min_price=1500000, max_price=100000).generate_data():
+        for record in PropertiesWebTool(pages=1, region="London", min_price=1500000, max_price=100000).generate_data():
             if count == 0:
                 count += 1
                 continue
@@ -30,6 +30,10 @@ class TestListings(unittest.TestCase):
             if count == 25: break
 
     def test_must_have(self):
+
+        '''
+        Test that URI generated matches test input parameter.
+        '''
 
         self.assertEqual(URICreator(
             min_price=None,
